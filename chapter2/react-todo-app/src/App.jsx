@@ -1,99 +1,102 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './App.css';
 
-class App extends Component {
-
+class App extends React.Component {
   state = {
-    todoData: [
-      {
-        id: '1',
-        value: 'study',
-        completed: true
-      },
-      {
-        id: '2',
-        value: 'exercise',
-        completed: false
-      },
-    ],
-    value: ''
-  }
+    todoData: [],
+    value: '',
+    completed: false,
+  };
 
   btnStyle = {
+    background: 'skyblue',
     color: '#fff',
     border: 'none',
     padding: '5px 9px',
     borderRadius: '50%',
     cursor: 'pointer',
-    float: 'right'
-  }
+    float: 'right',
+  };
 
-  getStyle = () => {
+  listStyle = (completed) => {
     return {
       padding: '10px',
       borderBottom: '1px #ccc dotted',
-      textDecoration: 'none'
-    }
-  }
+      textDecoration: completed ? 'line-through' : 'none',
+    };
+  };
 
-  onClickDelete = (id) => {
-    let newTodoData = this.state.todoData.filter((data) => data.id !== id);
-    this.setState({ todoData: newTodoData});
-  }
+  handleChageInput = (e) => {
+    console.log(e.target.value);
+    this.setState({
+      value: e.target.value,
+    });
+  };
 
-  onChangeInput = (e) => {
-    console.log('e', e.target.value);
-    this.setState({ value: e.target.value })
-  }
-
-  onSubmitForm = (e) => {
-    // 인풋으로 전송할때 페이지가 리렌더링 되는것을 막는다.
+  handleSubmitForm = (e) => {
     e.preventDefault();
-
+    console.log('submit');
     let newTodo = {
       id: Date.now(),
       title: this.state.value,
-      completed: false
+      completed: false,
     };
+    this.setState({
+      todoData: [...this.state.todoData, newTodo],
+      value: '',
+    });
+  };
 
-    this.setState({ todoData: [...this.state.todoData, newTodo], value: '' });
-  }
+  handleCompleChange = (id) => {
+    let newTodoData = this.state.todoData.map((data) => {
+      if (data.id === id) {
+        data.completed = !data.completed;
+      }
+      return data;
+    });
+    this.setState({
+      todoData: newTodoData,
+    });
+  };
+
+  onClickDelete = (id) => {
+    return () => {
+      console.log('delete');
+      this.setState({
+        todoData: this.state.todoData.filter((data) => data.id !== id),
+      });
+    };
+  };
 
   render() {
-    return(
-      <div className='container'>
-        <div className='todoBlock'>
-          <div className='title'>
-            <h1>To do list</h1>
+    return (
+      <div className="container">
+        <div className="todoBlock">
+          <div className="title">
+            <h1>할 일 목록</h1>
           </div>
-        {this.todoData.state.map((data) => (
-          <div style={this.getStyle()} key={data.id}>
-          <input type='checkbox' defaultChecked={false} />
-          {data.title}
-          <button
-            style={this.btnStyle}
-            onClick={() => this.onClickDelete(data.id)}
-            >
-              x
-            </button>
-        </div>
-        ))}
+          {this.state.todoData.map((data) => (
+            // 이런식으로 map 메서드를 활용 할 때는 key값을 넣어줘야 에러가 나지 않는다.
+            // key값은 고유한 값이어야 하며 index값을 넣는것은 불변성을 위해 피해야 한다.
+            <div style={this.listStyle(data.completed)} key={data.id}>
+              <input type="checkbox" defaultChecked={false} onChange={() => this.handleCompleChange(data.id)} />
+              {data.title}
+              <button type="button" style={this.btnStyle} onClick={this.onClickDelete(data.id)}>
+                x
+              </button>
+            </div>
+          ))}
 
-          <form style={{ display: 'flex' }} onSubmit={this.onSubmitForm}>
+          <form style={{ display: 'flex' }}>
             <input
-              type='text'
-              name='value'
+              type="text"
+              name="value"
               style={{ flex: '10', padding: '5px' }}
-              placeholder='Enter here'
+              placeholder="해야 할 일을 입력하세요"
               value={this.state.value}
-              onChange={this.onChangeInput}
+              onChange={this.handleChageInput}
             />
-            <input
-              type='submit'
-              value='Enter'
-              className="bnt"
-              style={{ flex: '1'}}
-            />
+            <input type="submit" value="입력" className="btn" style={{ flex: '1' }} onClick={this.handleSubmitForm} />
           </form>
         </div>
       </div>
