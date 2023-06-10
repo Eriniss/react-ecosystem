@@ -23,6 +23,7 @@ class App extends React.Component {
       padding: '10px',
       borderBottom: '1px #ccc dotted',
       textDecoration: completed ? 'line-through' : 'none',
+      color: completed ? '#bbbbbb' : '#000',
     };
   };
 
