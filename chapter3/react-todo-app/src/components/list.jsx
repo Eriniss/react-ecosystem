@@ -53,3 +53,71 @@ export default function list({ todoData, setTodoData }) {
     </div>
   );
 }
+
+// import React from 'react';
+// import { Draggable } from 'react-beautiful-dnd';
+
+// export default function List({ todoData, setTodoData }) {
+//   const btnStyle = {
+//     background: 'skyblue',
+//     color: '#fff',
+//     border: 'none',
+//     borderRadius: '50%',
+//     cursor: 'pointer',
+//     float: 'right',
+//     height: '20px',
+//     width: '20px',
+//   };
+
+//   const listStyle = (completed) => ({
+//     padding: '10px',
+//     borderBottom: '1px #ccc dotted',
+//     textDecoration: completed ? 'line-through' : 'none',
+//     color: completed ? '#bbbbbb' : '#000',
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'space-between',
+//   });
+
+//   const handleCompleChange = (id) => {
+//     let newTodoData = todoData.map((data) => {
+//       if (data.id === id) {
+//         data.completed = !data.completed;
+//       }
+//       return data;
+//     });
+//     setTodoData(newTodoData);
+//   };
+
+//   const onClickDelete = (id) => {
+//     return () => {
+//       console.log('delete');
+//       setTodoData(todoData.filter((data) => data.id !== id));
+//     };
+//   };
+
+//   return (
+//     <div>
+//       {todoData.map((data, index) => (
+//         <Draggable key={data.id} draggableId={data.id.toString()} index={index}>
+//           {(provided, snapshot) => (
+//             <div
+//               style={listStyle(data.completed)}
+//               key={data.id}
+//               ref={provided.innerRef}
+//               {...provided.draggableProps}
+//               {...provided.dragHandleProps}
+//               className={snapshot.isDragging ? 'selected' : 'not-selected'}
+//             >
+//               <input type="checkbox" defaultChecked={false} onChange={() => handleCompleChange(data.id)} />
+//               <span>{data.title}</span>
+//               <button type="button" style={btnStyle} onClick={onClickDelete(data.id)}>
+//                 x
+//               </button>
+//             </div>
+//           )}
+//         </Draggable>
+//       ))}
+//     </div>
+//   );
+// }
