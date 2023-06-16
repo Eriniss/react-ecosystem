@@ -1,26 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-export default function list({ todoData, setTodoData }) {
-  const btnStyle = {
-    background: 'skyblue',
-    color: '#fff',
-    border: 'none',
-    padding: '5px 9px',
-    borderRadius: '50%',
-    cursor: 'pointer',
-    float: 'right',
+const List = ({ id, title, completed, todoData, setTodoData, provided, snapshot }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(title);
+
+  const handleClick = (id) => {
+    let newTodoData = todoData.filter((data) => data.id !== id);
+    setTodoData(newTodoData);
+    localStorage.setItem('todoData', JSON.stringify(newTodoData));
   };
 
-  const listStyle = (completed) => {
-    return {
-      padding: '10px',
-      borderBottom: '1px #ccc dotted',
-      textDecoration: completed ? 'line-through' : 'none',
-      color: completed ? '#bbbbbb' : '#000',
-    };
-  };
-
-  const handleCompleChange = (id) => {
+  const handleCompleteChange = (id) => {
     let newTodoData = todoData.map((data) => {
       if (data.id === id) {
         data.completed = !data.completed;
@@ -28,96 +18,72 @@ export default function list({ todoData, setTodoData }) {
       return data;
     });
     setTodoData(newTodoData);
+    localStorage.setItem('todoData', JSON.stringify(newTodoData));
   };
 
-  const onClickDelete = (id) => {
-    return () => {
-      console.log('delete');
-      setTodoData(todoData.filter((data) => data.id !== id));
-    };
+  const handleEditChange = (e) => {
+    setEditedTitle(e.target.value);
   };
 
-  return (
-    <div>
-      {todoData.map((data) => (
-        // 이런식으로 map 메서드를 활용 할 때는 key값을 넣어줘야 에러가 나지 않는다.
-        // key값은 고유한 값이어야 하며 index값을 넣는것은 불변성을 위해 피해야 한다.
-        <div style={listStyle(data.completed)} key={data.id}>
-          <input type="checkbox" defaultChecked={false} onChange={() => handleCompleChange(data.id)} />
-          {data.title}
-          <button type="button" style={btnStyle} onClick={onClickDelete(data.id)}>
+  const handleSubmit = () => {
+    let newTodoData = todoData.map((data) => {
+      if (data.id === id) {
+        data.title = editedTitle;
+      }
+      return data;
+    });
+    setTodoData(newTodoData);
+    localStorage.setItem('todoData', JSON.stringify(newTodoData));
+    setIsEditing(false);
+  };
+
+  if (isEditing) {
+    return (
+      <div className="flex items-center justify-between w-full px-4 py-1 my-1 text-gray-600 bg-gray-100 border rounded row">
+        <form onSubmit={handleSubmit}>
+          <input
+            className="w-full px-3 py-2 mr-4 text-gray-500 appearance-none"
+            value={editedTitle}
+            onChange={handleEditChange}
+            autoFocus
+          />
+        </form>
+        <div className="items-center">
+          <button class="px-4 py-2 float-right" onClick={() => setIsEditing(false)} type="button">
             x
           </button>
+          <button onClick={handleSubmit} class="px-4 py-2 float-right" type="submit">
+            save
+          </button>
         </div>
-      ))}
-    </div>
-  );
-}
+      </div>
+    );
+  } else {
+    return (
+      <div
+        key={id}
+        {...provided.draggableProps}
+        ref={provided.innerRef}
+        {...provided.dragHandleProps}
+        className={`${
+          snapshot.isDragging ? 'bg-gray-400' : 'bg-gray-100'
+        } flex items-center justify-between w-full px-4 py-1 my-2 text-gray-600 bg-gray-100 border rounded`}
+      >
+        <div className="items-center">
+          <input type="checkbox" onChange={() => handleCompleteChange(id)} defaultChecked={completed} />{' '}
+          <span className={completed ? 'line-through' : undefined}>{title}</span>
+        </div>
+        <div className="items-center">
+          <button className="float-right px-4 py-2" onClick={() => handleClick(id)}>
+            x
+          </button>
+          <button className="float-right px-4 py-2" onClick={() => setIsEditing(true)}>
+            edit
+          </button>
+        </div>
+      </div>
+    );
+  }
+};
 
-// import React from 'react';
-// import { Draggable } from 'react-beautiful-dnd';
-
-// export default function List({ todoData, setTodoData }) {
-//   const btnStyle = {
-//     background: 'skyblue',
-//     color: '#fff',
-//     border: 'none',
-//     borderRadius: '50%',
-//     cursor: 'pointer',
-//     float: 'right',
-//     height: '20px',
-//     width: '20px',
-//   };
-
-//   const listStyle = (completed) => ({
-//     padding: '10px',
-//     borderBottom: '1px #ccc dotted',
-//     textDecoration: completed ? 'line-through' : 'none',
-//     color: completed ? '#bbbbbb' : '#000',
-//     display: 'flex',
-//     alignItems: 'center',
-//     justifyContent: 'space-between',
-//   });
-
-//   const handleCompleChange = (id) => {
-//     let newTodoData = todoData.map((data) => {
-//       if (data.id === id) {
-//         data.completed = !data.completed;
-//       }
-//       return data;
-//     });
-//     setTodoData(newTodoData);
-//   };
-
-//   const onClickDelete = (id) => {
-//     return () => {
-//       console.log('delete');
-//       setTodoData(todoData.filter((data) => data.id !== id));
-//     };
-//   };
-
-//   return (
-//     <div>
-//       {todoData.map((data, index) => (
-//         <Draggable key={data.id} draggableId={data.id.toString()} index={index}>
-//           {(provided, snapshot) => (
-//             <div
-//               style={listStyle(data.completed)}
-//               key={data.id}
-//               ref={provided.innerRef}
-//               {...provided.draggableProps}
-//               {...provided.dragHandleProps}
-//               className={snapshot.isDragging ? 'selected' : 'not-selected'}
-//             >
-//               <input type="checkbox" defaultChecked={false} onChange={() => handleCompleChange(data.id)} />
-//               <span>{data.title}</span>
-//               <button type="button" style={btnStyle} onClick={onClickDelete(data.id)}>
-//                 x
-//               </button>
-//             </div>
-//           )}
-//         </Draggable>
-//       ))}
-//     </div>
-//   );
-// }
+export default List;
