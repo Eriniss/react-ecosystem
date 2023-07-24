@@ -1,5 +1,8 @@
 import Nav from './components/Nav';
 import Banner from './components/Banner';
+import Row from './components/Row';
+import requests from './api/requests';
+import Footer from './components/Footer';
 import './App.css';
 
 function App() {
@@ -7,6 +10,13 @@ function App() {
     <div className="App">
       <Nav />
       <Banner />
+
+      <Row title="NETFLIX ORIGINALS" id="NO" fetchUrl={requests.fetchNetflixOriginals} isLargeLow />
+      <Row title="Top Rated" id="TR" fetchUrl={requests.fetchTopRated} />
+      <Row title="Action Movies" id="AM" fetchUrl={requests.fetchActionMovies} />
+      <Row title="Comedy Movies" id="CM" fetchUrl={requests.fetchComedyMovies} />
+
+      <Footer />
     </div>
   );
 }
