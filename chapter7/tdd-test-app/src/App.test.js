@@ -24,6 +24,7 @@ test('plus button has correct text', () => {
 
 test('when the + button is pressed, the counter changes +1', () => {
   render(<App />);
+
   const buttonElement = screen.getByTestId('plus-button');
   fireEvent.click(buttonElement);
 
@@ -33,11 +34,14 @@ test('when the + button is pressed, the counter changes +1', () => {
 
 test('when the - button is pressed, the counter changes -1', () => {
   render(<App />);
+
   const buttonElement = screen.getByTestId('minus-button');
+  // 버튼 클릭
   fireEvent.click(buttonElement);
 
   const counterElement = screen.getByTestId('counter');
-  expect(counterElement).toHaveTextContent(1);
+  // 클릭한 버튼이 1인지 확인
+  expect(counterElement).toHaveTextContent(-1);
 });
 
 test('toggle On/Off switch', () => {
